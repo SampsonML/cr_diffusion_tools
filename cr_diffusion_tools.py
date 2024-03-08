@@ -70,7 +70,7 @@ def cr_spatial_covariance(filename, group=1, normalize=True):
         Ecr[1,2] += rho_cr * ((y_values[idx]) * (z_values[idx])) 
 
         # column 3
-        I_Ecr[2,2] += rho_cr * ((z_values[idx]) * (z_values[idx])) 
+        Ecr[2,2] += rho_cr * ((z_values[idx]) * (z_values[idx])) 
 
     # symmetric properties
     Ecr[1,0] = I_Ecr[0,1] 
