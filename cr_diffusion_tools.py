@@ -80,9 +80,9 @@ def cr_spatial_covariance(filename, group=1, normalize=True):
     # Divide by total energy
     if normalize == True:
         E = cr_data * (dx[0] * 3.24078e-19)**3 # divide out the total CR energy
-        I_Ecr /= np.sum(E)
+        Ecr /= np.sum(E)
 
     # calculate the eigenvalues
-    eigs, evecs = np.linalg.eig(I_Ecr)
+    eigs, evecs = np.linalg.eig(Ecr)
     
     return Ecr, eigs, evecs, t
