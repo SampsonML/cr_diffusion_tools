@@ -73,9 +73,9 @@ def cr_spatial_covariance(filename, group=1, normalize=True):
         Ecr[2,2] += rho_cr * ((z_values[idx]) * (z_values[idx])) 
 
     # symmetric properties
-    Ecr[1,0] = I_Ecr[0,1] 
-    Ecr[2,0] = I_Ecr[0,2] 
-    Ecr[2,1] = I_Ecr[1,2] 
+    Ecr[1,0] = Ecr[0,1] 
+    Ecr[2,0] = Ecr[0,2] 
+    Ecr[2,1] = Ecr[1,2] 
     
     # Divide by total energy
     if normalize == True:
