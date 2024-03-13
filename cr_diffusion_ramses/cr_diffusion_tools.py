@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import yt
 
-def cr_spatial_covariance(filename, group=1, e_inj=1e-7, r_inj=0.04, normalize=True):
+def cr_spatial_covariance(filename, group=1, e_inj=1e-7, r_inj=0.04, normalize=True, sort=False):
     """
     Calculates the eigenvalues of the spatial covariance matrix
     for a given field from RAMSES data outputs
@@ -79,14 +79,12 @@ def cr_spatial_covariance(filename, group=1, e_inj=1e-7, r_inj=0.04, normalize=T
     
     # Divide by total energy
     if normalize == True:
-        r = r_inj * box_len * 3.24078e-19 
-        Volume = (4/3) * np.pi * r**3
-        E = e_inj * Volume
-        Ecr = Ecr/E
-        #E = cr_data * (dx[0] * 3.24078e-19)**3 # divide out the total CR energy
-        #Ecr /= np.sum(E)
+        E = cr_data * (dx[0] * 3.24078e-19)**3 # divide out the total CR energy
+        Ecr /= np.sum(E)
 
     # calculate the eigenvalues
+    Ecr = Ecr / len(cr_data) # divide by n_grid
     eigs, evecs = np.linalg.eig(Ecr)
+    if sort: eigs = np.sort(eigs)[::-1] # sort in descending order for consistency
     
     return Ecr, eigs, evecs, t
