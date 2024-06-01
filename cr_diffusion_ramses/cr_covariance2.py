@@ -27,15 +27,18 @@ def cr_spatial_covariance(path, num, trial_name="tmp", normalize=True, sort=Fals
     """
     
     # for now use yt to get time
-    prefix = path + "/output_000"
-    suffix = str(num) + "/info_000" + str(num) + ".txt"
+    if num < 10:
+        prefix = path + "/output_0000"
+        suffix = str(num) + "/info_0000" + str(num) + ".txt"
+    else: 
+        prefix = path + "/output_000"
+        suffix = str(num) + "/info_000" + str(num) + ".txt"
     filename = prefix + suffix
     ds = yt.load(filename)
     t = np.array( ds.current_time.in_units('s') )
     
     
-    
-    # create the data if needed otherwise directly load it in
+    # create and save the data if needed otherwise directly load it in
     data_name = trial_name + "/snapshot_" +  str(num)
     if not os.path.exists(trial_name):
         os.makedirs(trial_name)
@@ -70,16 +73,16 @@ def cr_spatial_covariance(path, num, trial_name="tmp", normalize=True, sort=Fals
     for idx, rho_cr in enumerate(e):
 
         # column 1
-        Ecr[0,0] += rho_cr * ((x[idx]) * (x[idx])) 
-        Ecr[0,1] += rho_cr * ((x[idx]) * (y[idx])) 
-        Ecr[0,2] += rho_cr * ((x[idx]) * (z[idx])) 
+        Ecr[0,0] += rho_cr * ((x[idx]) * (x[idx])) * dx**3
+        Ecr[0,1] += rho_cr * ((x[idx]) * (y[idx])) * dx**3
+        Ecr[0,2] += rho_cr * ((x[idx]) * (z[idx])) * dx**3 
 
         # column 2
-        Ecr[1,1] += rho_cr * ((y[idx]) * (y[idx])) 
-        Ecr[1,2] += rho_cr * ((y[idx]) * (z[idx])) 
+        Ecr[1,1] += rho_cr * ((y[idx]) * (y[idx])) * dx**3
+        Ecr[1,2] += rho_cr * ((y[idx]) * (z[idx])) * dx**3
 
         # column 3
-        Ecr[2,2] += rho_cr * ((z[idx]) * (z[idx])) 
+        Ecr[2,2] += rho_cr * ((z[idx]) * (z[idx])) * dx**3
 
     # symmetric properties
     Ecr[1,0] = Ecr[0,1] 
@@ -87,10 +90,10 @@ def cr_spatial_covariance(path, num, trial_name="tmp", normalize=True, sort=Fals
     Ecr[2,1] = Ecr[1,2] 
 
     # Divide by total energy
-    Ecr  /= np.sum(e * dx**3)
+    Ecr  /= np.sum(e * dx**3) 
 
     # calculate the eigenvalues
-    Ecr = Ecr / len(e) # divide by n_grid
+    #Ecr = Ecr / len(e) # divide by n_grid # TODO: remove this
     eigs, evecs = np.linalg.eig(Ecr)
     if sort: eigs = np.sort(eigs)[::-1] # sort in descending order for consistency
     
