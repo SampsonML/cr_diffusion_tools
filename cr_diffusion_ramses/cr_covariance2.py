@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import ramses_matt_io as ram
 import yt
 
-def cr_spatial_covariance(path, num, trial_name="tmp", normalize=True, sort=False):
+def cr_spatial_covariance(path, num, trial_name="tmp", group=1, normalize=True, sort=False):
     """
     Calculates the eigenvalues of the spatial covariance matrix
     for a given field from RAMSES data outputs
@@ -30,9 +30,12 @@ def cr_spatial_covariance(path, num, trial_name="tmp", normalize=True, sort=Fals
     if num < 10:
         prefix = path + "/output_0000"
         suffix = str(num) + "/info_0000" + str(num) + ".txt"
-    else: 
+    elif num < 100:
         prefix = path + "/output_000"
         suffix = str(num) + "/info_000" + str(num) + ".txt"
+    else:
+        prefix = path + "/output_00"
+        suffix = str(num) + "/info_00" + str(num) + ".txt"
     filename = prefix + suffix
     ds = yt.load(filename)
     t = np.array( ds.current_time.in_units('s') )
@@ -59,7 +62,9 @@ def cr_spatial_covariance(path, num, trial_name="tmp", normalize=True, sort=Fals
     y = (c.x[1] - 0.5) * 20
     z = (c.x[2] - 0.5) * 20
     dx = (c.dx[0]) * 20
-    e = c.u[19]
+    group_idx = group + 18
+    eps = 1e-13 # protect against singular matrices
+    e = c.u[group_idx] + eps
 
     # in cgs 
     pc_to_cm = 3.086e18
